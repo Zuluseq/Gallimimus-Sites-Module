@@ -1,5 +1,5 @@
 {
-    "name": "Zuluseq/Gallimimus-Sites-Module",
+    "name": "Zuluseq/GallimimusSitesModule",
     "description": "Gallimimus Sites Module for Gallimimus",
     "require": {
         "php": "^7.1",
