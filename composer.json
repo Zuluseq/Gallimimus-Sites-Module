@@ -1,25 +1,8 @@
 {
     "name": "Zuluseq/Gallimimus-Sites-Module",
     "description": "Gallimimus Sites Module for Gallimimus",
-    "type": "project",
-    "homepage": "https://github.com/Zuluseq/Gallimimus-Sites-Module",
-    "license": "BSD-3-Clause",
-    "keywords": [
-        "Gallimimus",
-        "cms",
-        "zend-expressive"
-    ],
-    "config": {
-        "sort-packages": true
-    },
-    "support": {
-        "issues": "https://github.com/Zuluseq/Gallimimus-Sites-Module/issues",
-        "source": "https://github.com/Zuluseq/Gallimimus-Sites-Module",
-        "rss": "https://github.com/Zuluseq/Gallimimus-Sites-Module/releases.atom"
-    },
     "require": {
-        "php": "^7.1"
-    },
-    "require-dev": {
-    },
+        "php": "^7.1",
+        "another-vendor/package": "1.*"
+    }
 }
