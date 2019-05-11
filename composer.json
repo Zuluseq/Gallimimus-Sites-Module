@@ -4,5 +4,6 @@
     "require": {
         "php": "^7.1",
         "another-vendor/package": "1.*"
-    }
+    },
+    "minimum-stability": "dev"
 }
