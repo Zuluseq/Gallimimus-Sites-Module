@@ -38,7 +38,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Gallimimus\\Sites\\": "src/Sites/"
+            "Gallimimus\\Sites\\": "/"
         }
     },
     "minimum-stability": "dev",
