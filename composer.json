@@ -1,7 +1,6 @@
 {
     "name": "zuluseq/gallimimus-sites-module",
     "description": "Gallimimus Sites Module for Gallimimus",
-    "type": "project",
     "homepage": "https://github.com/Zuluseq/Gallimimus-Sites-Module",
     "license": "BSD-3-Clause",
     "keywords": [
@@ -38,8 +37,16 @@
     },
     "autoload": {
         "psr-4": {
-            "Gallimimus\\Sites\\": "/"
+            "Gallimimus\\Sites\\": "src/"
         }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Gallimimus\\Sites\\": "test/"
+        }
+    },
+    "config": {
+        "sort-packages": true
     },
     "minimum-stability": "dev",
     "version": "1.0.0"
