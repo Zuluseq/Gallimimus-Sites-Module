@@ -10,6 +10,9 @@ use Psr\Http\Server\RequestHandlerInterface;
 use Zend\Diactoros\Response\JsonResponse;
 use Zend\Diactoros\Response\HtmlResponse;
 use Zend\Http\Client;
+use Zend\Http\Request;
+use Zend\Dom\Query;
+use Zend\Json\Json;
 
 use function time;
 
@@ -17,18 +20,23 @@ class SiteHandler implements RequestHandlerInterface
 {
     public function handle(ServerRequestInterface $request) : ResponseInterface
     {
-        // return new JsonResponse(['gallimimus site handler: ack' => time()]);
+		$url = $request->getServerParams()['HTTP_HOST'];
+		$sch = $request->getServerParams()['REQUEST_SCHEME'];
+		$uri = $sch.'://'.$url.'/repository/get/getSiteBySlugAndNamespace?namespace=vizmedia-test&slug=home';
 
-		$htmlContent = '<h1>dupa2</h1>';
+ 		$client = new Client();
+        $client->setAdapter('Zend\Http\Client\Adapter\Curl');
+         
+        $client->setUri($uri);
+		$client->setOptions(array(
+			'maxredirects' => 0,
+			'timeout'      => 30
+		));
+        $result = $client->send();
+        $JsonBody = $result->getBody();
 
-		// http://localhost/repository/get/getSiteBySlugAndNamespace?namespace=vizmedia-test&slug=home
+		$phpNative = Json::decode($JsonBody);
 
-		// $client = new Client('http://example.org', array(
-		// 	'maxredirects' => 0,
-		// 	'timeout'      => 30
-		// ));
-
-		// return new HtmlResponse($htmlContent,200);
-		return new JsonResponse(null);
+        return new HtmlResponse($phpNative->results);
     }
 }
