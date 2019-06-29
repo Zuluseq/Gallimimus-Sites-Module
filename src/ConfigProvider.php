@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace GallimimusSiteModule;
+namespace GallimimusSitesModule;
 
 /**
  * The configuration provider for the GallimimusSiteModule module
@@ -34,6 +34,7 @@ class ConfigProvider
             'invokables' => [
             ],
             'factories'  => [
+				Handler\SiteHandler::class => Handler\SiteHandlerFactory::class
             ],
         ];
     }
