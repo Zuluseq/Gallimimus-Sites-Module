@@ -23,11 +23,12 @@ class SiteHandler implements RequestHandlerInterface
 
 		// http://localhost/repository/get/getSiteBySlugAndNamespace?namespace=vizmedia-test&slug=home
 
-		$client = new Client('http://example.org', array(
-			'maxredirects' => 0,
-			'timeout'      => 30
-		));
+		// $client = new Client('http://example.org', array(
+		// 	'maxredirects' => 0,
+		// 	'timeout'      => 30
+		// ));
 
-		return new HtmlResponse($htmlContent,200);
+		// return new HtmlResponse($htmlContent,200);
+		return new JsonResponse(null);
     }
 }

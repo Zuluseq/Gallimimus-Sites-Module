@@ -37,7 +37,7 @@
     },
     "autoload": {
         "psr-4": {
-            "GallimimusSitesModule\\": "src/",
+            "Gallimimus\\Sites\\": "src/",
 			"GallimimusRepositoryModule\\": "vendor/zuluseq/gallimimus-repository-module/src/"
         }
     },
