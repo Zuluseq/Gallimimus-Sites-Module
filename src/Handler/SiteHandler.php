@@ -59,15 +59,15 @@ class SiteHandler implements RequestHandlerInterface
 			$result = $client->send();
 			$JsonBody = $result->getBody();
 			$komponenty = Json::decode($JsonBody);
-
-			// $sekcjeContent[] = $this->preparujKomponenty($komponenty);
-			$wynik = $wynik.$this->preparujKomponenty($komponenty);
+			$sekcjeContent[] = $this->preparujKomponenty($komponenty);
+			// $wynik = $wynik.$this->preparujKomponenty($komponenty);
 		}
 
 
 		// wstawiam sekcje do szablonu
-
+        // return new HtmlResponse($sekcjeContent[0]);
         return new HtmlResponse($wynik);
+        // return new HtmlResponse($szablon);
         // return new JsonResponse($sekcjeContent,200,[],JSON_PRETTY_PRINT);
         // return new JsonResponse($site->template);
     }
@@ -77,7 +77,13 @@ class SiteHandler implements RequestHandlerInterface
 		$wynik = "";
 		foreach($komponenty as $komponent) 
 		{
-			$wynik = $wynik.$komponent->template;
+			$m = new \Mustache_Engine;
+			// $wynik = $m->render('Hello {{planet}}', array('planet' => 'World!'));
+			// $s = $m->render($komponent->template, $komponent->default_values);
+			$parametry = Json::decode($komponent->default_values);
+			$s = $m->render($komponent->template, $parametry);
+
+			$wynik = $wynik.$s;
 		}
 		return $wynik;
 	}
