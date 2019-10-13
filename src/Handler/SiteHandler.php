@@ -9,6 +9,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Zend\Diactoros\Response\JsonResponse;
 use Zend\Diactoros\Response\HtmlResponse;
+use Zend\Diactoros\Response\TextResponse;
 use Zend\Http\Client;
 use Zend\Http\Request;
 use Zend\Dom\Query;
@@ -37,20 +38,22 @@ class SiteHandler implements RequestHandlerInterface
 		));
         $result = $client->send();
         $JsonBody = $result->getBody();
+		
 		$phpNative = Json::decode($JsonBody);
 		$site = $phpNative[0];
 		$szablon = $site->template;
 
-		// pobieram komponenty
 		$uriSekcje = $uriSekcje.$site->id_site;
         $client->setUri($uriSekcje);
         $result = $client->send();
         $JsonBody = $result->getBody();
+
+		//tablica nazw sekcji 
 		$sekcje = Json::decode($JsonBody);
 
 		$sekcjeContent = array();
 		// tworze content dla sekcji i wypełniam je komponentami
-		$wynik = "";
+
 		foreach($sekcje as $sekcja)
 		{
 			$uriKomp = str_replace('{id_site}',$site->id_site,$uriKomponenty);
@@ -59,14 +62,41 @@ class SiteHandler implements RequestHandlerInterface
 			$result = $client->send();
 			$JsonBody = $result->getBody();
 			$komponenty = Json::decode($JsonBody);
-			$sekcjeContent[] = $this->preparujKomponenty($komponenty);
-			// $wynik = $wynik.$this->preparujKomponenty($komponenty);
+			$sekcjeContent[$sekcja->section] = $this->preparujKomponenty($komponenty);
 		}
 
+		// // $qr = new Query($szablon);
+		
+		// // <gal-template gal-section="nawigacja">nawigacja</gal-template>
+		// $dom = new \DOMDocument();
+		
+		$domSzablon = new \DOMDocument('5.0', 'UTF-8');
+		$domSzablon->loadHTML($szablon, LIBXML_NOERROR );
+		$znalezioneSekcje = $domSzablon->getElementsByTagName("gal-template");
+		
+		$ileSekcji = $znalezioneSekcje->length;
+		for ($i=0; $i<$ileSekcji; $i++) 
+		{
+			$znalezioneSekcje = $domSzablon->getElementsByTagName("gal-template");
+			$znalezionaSekcja = $znalezioneSekcje[0];
+			$nazwaSekcji = "";
+			$nazwaSekcji = $znalezionaSekcja->attributes["gal-section"]->value;
+			if(strlen($nazwaSekcji) > 0) 
+			{
+				$trescSekcji = $sekcjeContent[$nazwaSekcji];
+				$subDom = $domSzablon->createDocumentFragment();
+				$subDom->appendXML($trescSekcji);
+				$znalezionaSekcja->parentNode->replaceChild($subDom,$znalezionaSekcja);
+			}
+		}
 
 		// wstawiam sekcje do szablonu
-        // return new HtmlResponse($sekcjeContent[0]);
-        return new HtmlResponse($wynik);
+        // return new HtmlResponse($sekcjeContent[1]);
+        // return new TextResponse($wynik);
+        // return new TextResponse($domSzablon->saveHtml());
+        return new HtmlResponse($domSzablon->saveHtml());
+        // return new JsonResponse($JsonBody);
+        // return new JsonResponse($sekcje);
         // return new HtmlResponse($szablon);
         // return new JsonResponse($sekcjeContent,200,[],JSON_PRETTY_PRINT);
         // return new JsonResponse($site->template);
@@ -83,7 +113,8 @@ class SiteHandler implements RequestHandlerInterface
 			$parametry = Json::decode($komponent->default_values);
 			$s = $m->render($komponent->template, $parametry);
 
-			$wynik = $wynik.$s;
+			// $wynik[] = $s;
+			$wynik .= $s;
 		}
 		return $wynik;
 	}
