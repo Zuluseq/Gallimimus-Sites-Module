@@ -14,6 +14,7 @@ use Zend\Http\Client;
 use Zend\Http\Request;
 use Zend\Dom\Query;
 use Zend\Json\Json;
+use Zend\Db\Adapter\Exception;
 
 use function time;
 
@@ -23,9 +24,15 @@ class SiteHandler implements RequestHandlerInterface
     {
 		$url = $request->getServerParams()['HTTP_HOST'];
 		$sch = $request->getServerParams()['REQUEST_SCHEME'];
-		$uriSzablon = $sch.'://'.$url.'/repository/get/getSiteBySlugAndNamespace?namespace=vizmedia-test&slug=home';
+		$uriSzablon = $sch.'://'.$url.'/repository/get/getSiteBySlugAndNamespace?namespace=vizmedia-test&slug=';
 		$uriSekcje = $sch.'://'.$url.'/repository/get/getSectionsOfSite?id_site=';
 		$uriKomponenty = $sch.'://'.$url.'/repository/get/getComponentsOfSection?id_site={id_site}&section={section}';
+
+		$attributes = $request->getAttributes();
+		$slug = $attributes['slug'];
+		if($slug != null) $slug = htmlspecialchars($slug, ENT_HTML5, 'UTF-8');
+		else $slug = "home";
+		$uriSzablon = $uriSzablon.$slug;
 
  		$client = new Client();
         $client->setAdapter('Zend\Http\Client\Adapter\Curl');
@@ -36,9 +43,9 @@ class SiteHandler implements RequestHandlerInterface
 			'maxredirects' => 0,
 			'timeout'      => 30
 		));
-        $result = $client->send();
-        $JsonBody = $result->getBody();
-		
+		$result = $client->send();
+		$JsonBody = $result->getBody();
+
 		$phpNative = Json::decode($JsonBody);
 		$site = $phpNative[0];
 		$szablon = $site->template;
@@ -47,6 +54,8 @@ class SiteHandler implements RequestHandlerInterface
         $client->setUri($uriSekcje);
         $result = $client->send();
         $JsonBody = $result->getBody();
+
+		if(!isset($JsonBody) || $JsonBody == null) $this->error("Brakuje zdefiniowanych komponentów dla tej strony");
 
 		//tablica nazw sekcji 
 		$sekcje = Json::decode($JsonBody);
@@ -117,5 +126,13 @@ class SiteHandler implements RequestHandlerInterface
 			$wynik .= $s;
 		}
 		return $wynik;
+	}
+
+	public function error($mess)
+	{
+		throw new Exception\RuntimeException(
+			$mess,
+			0
+		);		
 	}
 }
